@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,7 +52,8 @@ class MainActivity : ComponentActivity() {
                         Id = intent.getStringExtra("id"),
                         Password = intent.getStringExtra("password"),
                         Nickname = intent.getStringExtra("nickname"),
-                        Mbti = intent.getStringExtra("mbti")
+                        Mbti = intent.getStringExtra("mbti"),
+                        City = intent.getStringExtra("city")
                     )
                 }
             }
@@ -61,7 +63,7 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun MainScreen(Id: String?, Password: String?, Nickname: String?, Mbti: String?) {
+fun MainScreen(Id: String?, Password: String?, Nickname: String?, Mbti: String?,City: String?) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -74,15 +76,15 @@ fun MainScreen(Id: String?, Password: String?, Nickname: String?, Mbti: String?)
         ) {
             if (Nickname != null) {
                 Text(
-                    text = Nickname,
-                    fontSize = 50.sp
+                    text = Nickname.toUpperCase(),
+                    fontSize = 40.sp
                 )
                 Spacer(modifier = Modifier.width(16.dp))
             }
-            if (Mbti != null) {
+            if (City != null) {
                 Text(
-                    text = Mbti,
-                    fontSize = 50.sp,
+                    text = City.toUpperCase(),
+                    fontSize = 40.sp,
                     color = Color.Gray,
                     modifier = Modifier.padding(start = 16.dp)
                 )
@@ -111,6 +113,20 @@ fun MainScreen(Id: String?, Password: String?, Nickname: String?, Mbti: String?)
         if (Password != null) {
             Text(
                 text = Password,
+                modifier = Modifier.fillMaxWidth(),
+                fontSize = 20.sp,
+                color = Color.Gray
+            )
+        }
+        Spacer(modifier = Modifier.height(30.dp))
+        Text(
+            text ="MBTI",
+            fontSize = 30.sp,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        if (Mbti != null) {
+            Text(
+                text = Mbti.toUpperCase(),
                 modifier = Modifier.fillMaxWidth(),
                 fontSize = 20.sp,
                 color = Color.Gray

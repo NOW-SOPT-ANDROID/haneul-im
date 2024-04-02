@@ -48,7 +48,8 @@ class LoginActivity : ComponentActivity() {
                         SignupId = intent.getStringExtra("id"),
                         SignupPassword = intent.getStringExtra("password"),
                         SignupNickname = intent.getStringExtra("nickname"),
-                        SignupMbti = intent.getStringExtra("mbti")
+                        SignupMbti = intent.getStringExtra("mbti"),
+                        SignupCity = intent.getStringExtra("city")
                     )
                 }
             }
@@ -57,7 +58,7 @@ class LoginActivity : ComponentActivity() {
 }
 
 @Composable
-fun LoginScreen(SignupId: String?, SignupPassword: String?, SignupNickname: String?, SignupMbti: String?) {
+fun LoginScreen(SignupId: String?, SignupPassword: String?, SignupNickname: String?, SignupMbti: String?, SignupCity: String?) {
     var Id by remember { mutableStateOf("") }
     var Password by remember { mutableStateOf("") }
     Column(
@@ -113,6 +114,7 @@ fun LoginScreen(SignupId: String?, SignupPassword: String?, SignupNickname: Stri
                             putExtra("password", SignupPassword)
                             putExtra("nickname", SignupNickname)
                             putExtra("mbti", SignupMbti)
+                            putExtra("city", SignupCity)
                         }
                         context.startActivity(intent)
                     }

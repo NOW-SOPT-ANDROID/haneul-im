@@ -53,6 +53,7 @@ fun SignupScreen() {
     var Password by remember { mutableStateOf("") }
     var Nickname by remember { mutableStateOf("") }
     var Mbti by remember { mutableStateOf("") }
+    var City by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -99,19 +100,29 @@ fun SignupScreen() {
             onValueChange = { Mbti = it },
             label = { Text("Mbti를 입력해주세요") },
             modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Text)
+        )
+        Spacer(modifier = Modifier.height(30.dp))
+        Text("거주지")
+        TextField(
+            value = City,
+            onValueChange = { City = it },
+            label = { Text("거주지를 입력해주세요") },
+            modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Text)
         )
-        Spacer(modifier = Modifier.height(100.dp))
+        Spacer(modifier = Modifier.height(70.dp))
         val context = LocalContext.current
         Button(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             onClick = {
-                if (Id.isNotEmpty() && Password.isNotEmpty() && Nickname.isNotEmpty() && Mbti.isNotEmpty()) {
+                if (Id.length in 6..10 && Password.length in 8..12 && Nickname.isNotEmpty() && Mbti.length==4&& City.isNotEmpty()) {
                     val intent = Intent(context, LoginActivity::class.java).apply {
                         putExtra("id", Id)
                         putExtra("password", Password)
                         putExtra("nickname", Nickname)
                         putExtra("mbti", Mbti)
+                        putExtra("city", City)
                     }
                     Toast.makeText(context,"회원이 되신 것을 축하드려요 !", Toast.LENGTH_SHORT).show()
                     context.startActivity(intent)
