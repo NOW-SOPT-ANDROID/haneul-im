@@ -17,7 +17,7 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel by viewModels<HomeViewModel>()
 
-    // 프로필과 프로필 어댑터를 멤버 변수로 선언합니다.
+
     private val profile = Profile(R.drawable.dog1, "임하늘", "시험 시러")
     private val profileAdapter = ProfileAdapter(profile) {
         showEditDescriptionDialog(profile)
@@ -37,7 +37,7 @@ class HomeFragment : Fragment() {
 
         val friendAdapter = FriendAdapter()
 
-        // 친구 어댑터와 프로필 어댑터를 결합하여 ConcatAdapter를 생성합니다.
+
         val concatAdapter = ConcatAdapter(profileAdapter, friendAdapter)
 
         binding.rvFriends.run {

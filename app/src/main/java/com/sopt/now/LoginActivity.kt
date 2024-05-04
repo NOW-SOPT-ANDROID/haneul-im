@@ -36,8 +36,20 @@ class LoginActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         val loginResponse = response.body()
                         if (loginResponse?.code == 200) {
+                            val memberId = response.headers()["location"]
+                            Toast.makeText(
+                                this@LoginActivity,
+                                "로그인 성공 유저의 ID는 $memberId 입니둥",
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                            val bundle = Bundle().apply {
+                                putString("memberId", memberId)
+                            }
+
                             val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                            intent.putExtras(bundle)
                             startActivity(intent)
+
                         } else {
                             Toast.makeText(applicationContext, "로그인 실패 ! 아이디와 비밀번호를 다시 한번 확인해주세요.", Toast.LENGTH_LONG).show()
                         }
