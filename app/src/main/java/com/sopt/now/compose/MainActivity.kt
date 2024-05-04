@@ -1,6 +1,6 @@
 package com.sopt.now.compose
 
-
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,44 +16,33 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.sopt.now.compose.ui.theme.NOWSOPTAndroidTheme
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.sopt.now.compose.ui.theme.NOWSOPTAndroidTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +58,8 @@ class MainActivity : ComponentActivity() {
                         Password = intent.getStringExtra("password"),
                         Nickname = intent.getStringExtra("nickname"),
                         Mbti = intent.getStringExtra("mbti"),
-                        City = intent.getStringExtra("city"))
+                        City = intent.getStringExtra("city"),
+                        memberId = intent.getStringExtra("memberId"))
 
                 }
             }
@@ -78,8 +68,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Scaffold(Id: String?, Password: String?, Nickname: String?, Mbti: String?,City: String?) {
-    var presses by remember { mutableIntStateOf(0) }
+fun Scaffold(Id: String?, Password: String?, Nickname: String?, Mbti: String?,City: String?, memberId: String?) {
     var selectedItem by remember { mutableIntStateOf(0) }
     val viewModel = HomeViewModel()
     val items = listOf(
@@ -110,11 +99,6 @@ fun Scaffold(Id: String?, Password: String?, Nickname: String?, Mbti: String?,Ci
                 }
             }
         },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { presses++ }) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
-            }
-        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -124,11 +108,9 @@ fun Scaffold(Id: String?, Password: String?, Nickname: String?, Mbti: String?,Ci
             when(selectedItem) {
                 0 -> {
                     LazyColumn {
-                        // 내 프로필 섹션
                         item {
                             MyProfileItem(viewModel.profile)
                         }
-                        // 친구 목록 섹션
                         items(viewModel.mockFriendList) {
                             FriendProfileItem(it)
                         }
@@ -138,15 +120,23 @@ fun Scaffold(Id: String?, Password: String?, Nickname: String?, Mbti: String?,Ci
                     Text(text ="Search")
                 }
                 2 -> {
-                    MainScreen(Id, Password,Nickname,Mbti,City)
+                    val context = LocalContext.current
+                    Button(
+                        onClick = {
+                            val intent = Intent(context, PasswordActivity::class.java).apply {
+                                putExtra("memberId", memberId)
+                            }
+                            context.startActivity(intent)
+                        }
+                    ) {
+                        Text("비밀번호 변경")
+
+                    }
                 }
             }
-
         }
     }
 }
-
-
 
 @Composable
 fun FriendProfileItem(friend: Friend) {
@@ -329,4 +319,3 @@ fun MyProfileItem(profile: Profile) {
         }
     }
 }
-

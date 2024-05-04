@@ -23,6 +23,10 @@
             android:exported="false"
             android:theme="@style/Theme.NOWSOPTAndroid" />
         <activity
+            android:name=".PasswordActivity"
+            android:exported="false"
+            android:theme="@style/Theme.NOWSOPTAndroid" />
+        <activity
             android:name=".LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.NOWSOPTAndroid">

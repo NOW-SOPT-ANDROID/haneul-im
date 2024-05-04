@@ -109,8 +109,17 @@ fun LoginScreen() {
                             if (response.isSuccessful) {
                                 val loginResponse = response.body()
                                 if (loginResponse?.code == 200) {
-                                    val intent = Intent(context, MainActivity::class.java)
+                                    val userId = response.headers()["location"]
+                                    Toast.makeText(
+                                        context,
+                                        "로그인 성공! ID는 $userId 입니둥",
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
+                                    val intent = Intent(context, MainActivity::class.java).apply {
+                                        putExtra("memberId", userId)
+                                    }
                                     context.startActivity(intent)
+
                                 } else {
                                     Toast.makeText(context, "로그인 실패! 아이디와 비밀번호를 다시 확인해주세요.", Toast.LENGTH_SHORT).show()
                                 }

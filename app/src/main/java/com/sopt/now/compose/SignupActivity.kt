@@ -140,7 +140,6 @@ fun SignupScreen() {
                             context.startActivity(Intent(context, LoginActivity::class.java))
                         } else {
                             Toast.makeText(context, "회원가입 실패", Toast.LENGTH_SHORT).show()
-                            // 회원가입 실패 시 처리
                         }
                     }
 
