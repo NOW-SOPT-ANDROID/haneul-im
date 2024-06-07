@@ -64,6 +64,29 @@
         app:layout_constraintTop_toBottomOf="@id/tv_password"/>
 
     <TextView
+        android:id="@+id/tv_phone"
+        android:text="핸드폰 번호"
+        android:textSize="25dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et_password"/>
+
+    <EditText
+        android:id="@+id/et_phone"
+        android:layout_width="340dp"
+        android:layout_height="wrap_content"
+        android:hint="폰번호를 입력해주세요"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="30dp"
+        android:imeOptions="actionNext"
+        android:singleLine="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_phone"/>
+
+    <TextView
         android:id="@+id/tv_nickname"
         android:text="닉네임"
         android:textSize="25dp"
@@ -72,7 +95,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginStart="30dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/et_password"/>
+        app:layout_constraintTop_toBottomOf="@id/et_phone"/>
 
     <EditText
         android:id="@+id/et_nickname"
@@ -133,7 +156,7 @@
         app:layout_constraintTop_toBottomOf="@id/tv_city"/>
 
     <Button
-        android:id="@+id/btn_signup"
+        android:id="@+id/btSignUp"
         android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:text="회원가입"
