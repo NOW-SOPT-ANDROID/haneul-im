@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -12,28 +13,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sopt.now.RequestLoginDto
-import com.sopt.now.ResponseLoginDto
-import com.sopt.now.ServicePool
 import com.sopt.now.compose.ui.theme.NOWSOPTAndroidTheme
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class LoginActivity : ComponentActivity() {
+    private val loginViewModel: LoginViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -42,7 +34,7 @@ class LoginActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LoginScreen()
+                    LoginScreen(loginViewModel)
                 }
             }
         }
@@ -50,12 +42,11 @@ class LoginActivity : ComponentActivity() {
 }
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(loginViewModel: LoginViewModel) {
     var id by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     val context = LocalContext.current
-    val authService by lazy { ServicePool.authService }
 
     Column(
         modifier = Modifier
@@ -103,35 +94,24 @@ fun LoginScreen() {
             }
             Button(
                 onClick = {
-                    val request = RequestLoginDto(authenticationId = id, password = password)
-                    authService.login(request).enqueue(object : Callback<ResponseLoginDto> {
-                        override fun onResponse(call: Call<ResponseLoginDto>, response: Response<ResponseLoginDto>) {
-                            if (response.isSuccessful) {
-                                val loginResponse = response.body()
-                                if (loginResponse?.code == 200) {
-                                    val userId = response.headers()["location"]
-                                    Toast.makeText(
-                                        context,
-                                        "로그인 성공! ID는 $userId 입니둥",
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                                    val intent = Intent(context, MainActivity::class.java).apply {
-                                        putExtra("memberId", userId)
-                                    }
-                                    context.startActivity(intent)
-
-                                } else {
-                                    Toast.makeText(context, "로그인 실패! 아이디와 비밀번호를 다시 확인해주세요.", Toast.LENGTH_SHORT).show()
-                                }
-                            } else {
-                                Toast.makeText(context, "로그인에 실패했습니다!", Toast.LENGTH_SHORT).show()
+                    loginViewModel.login(
+                        id = id,
+                        password = password,
+                        onSuccess = { userId ->
+                            Toast.makeText(
+                                context,
+                                "로그인 성공! ID는 $userId 입니둥",
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                            val intent = Intent(context, MainActivity::class.java).apply {
+                                putExtra("memberId", userId)
                             }
+                            context.startActivity(intent)
+                        },
+                        onFailure = { message ->
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                         }
-
-                        override fun onFailure(call: Call<ResponseLoginDto>, t: Throwable) {
-                            Toast.makeText(context, "서버와의 통신에 실패했습니다!", Toast.LENGTH_SHORT).show()
-                        }
-                    })
+                    )
                 },
                 modifier = Modifier.weight(1f)
             ) {
@@ -140,4 +120,3 @@ fun LoginScreen() {
         }
     }
 }
-
