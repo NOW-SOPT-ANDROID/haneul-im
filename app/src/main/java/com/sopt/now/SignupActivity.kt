@@ -2,44 +2,88 @@ package com.sopt.now
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.google.android.material.snackbar.Snackbar
-import com.sopt.now.databinding.ActivityLoginBinding
 import com.sopt.now.databinding.ActivitySignupBinding
+import java.util.regex.Pattern
 
 class SignupActivity : AppCompatActivity() {
-    private lateinit var binding: ActivitySignupBinding
+
+    private val binding by lazy { ActivitySignupBinding.inflate(layoutInflater) }
+    private val authService by lazy { ServicePool.authService }
+    private val authRepository by lazy { AuthRepository(authService) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySignupBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.btnSignup.setOnClickListener {
-            val id = binding.etId.text.toString()
-            val password = binding.etPassword.text.toString()
-            val nickname = binding.etNickname.text.toString()
-            val mbti = binding.etMbti.text.toString()
-            val city = binding.etCity.text.toString()
-            if(id.length in 6..10&&password.length in 8..12&&nickname.isNotEmpty()&&mbti.isNotEmpty()&&city.isNotEmpty()){
-                Toast.makeText(getApplicationContext(),"회원이 되신 것을 축하드려요 !", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, LoginActivity::class.java).apply {
-                    putExtra("id", id)
-                    putExtra("password", password)
-                    putExtra("nickname", nickname)
-                    putExtra("mbti", mbti)
-                    putExtra("city", city)
-                }
-                startActivity(intent)
-            }
-            else{
-                Toast.makeText(getApplicationContext(),"정보를 다시 입력해주세요.", Toast.LENGTH_LONG).show()
-            }
+        initViews()
+    }
 
+    private fun initViews() {
+        binding.btSignUp.setOnClickListener {
+            signUp()
+        }
+    }
 
+    private fun signUp() {
+        val signUpRequest = getSignUpRequestDto() ?: return
+
+        authRepository.signUp(signUpRequest) { result ->
+            result.onSuccess { (signUpResponse, locationHeader) ->
+                val userId = locationHeader
+                Toast.makeText(
+                    this@SignupActivity,
+                    "회원가입 성공 유저의 ID는 $userId 입니다",
+                    Toast.LENGTH_SHORT,
+                ).show()
+                Log.d("SignUp", "data: $signUpResponse, userId: $userId")
+                startActivity(Intent(this@SignupActivity, LoginActivity::class.java))
+            }.onFailure {
+                val errorC = it.localizedMessage
+                Toast.makeText(
+                    this@SignupActivity,
+                    "회원가입 실패: $errorC",
+                    Toast.LENGTH_SHORT,
+                ).show()
+            }
+        }
+    }
+
+    private fun getSignUpRequestDto(): RequestSignUpDto? {
+        val id = binding.etId.text.toString()
+        val password = binding.etPassword.text.toString()
+        val nickname = binding.etNickname.text.toString()
+        val phoneNumber = binding.etPhone.text.toString()
+
+        if (!isPassword(password)) {
+            Toast.makeText(this@SignupActivity, "비밀번호는 8자 이상이어야 하며, 숫자, 문자, 특수문자를 포함해야 합니다.", Toast.LENGTH_SHORT).show()
+            return null
         }
 
+        if (!isPhone(phoneNumber)) {
+            Toast.makeText(this@SignupActivity, "전화번호 형식이 올바르지 않습니다. (예: 010-0000-0000)", Toast.LENGTH_SHORT).show()
+            return null
+        }
+
+        return RequestSignUpDto(
+            authenticationId = id,
+            password = password,
+            nickname = nickname,
+            phone = phoneNumber
+        )
+    }
+
+    private fun isPassword(password: String): Boolean {
+        if (password.length < 8) {
+            return false
+        }
+        val pattern = Pattern.compile("^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=]).*$")
+        return pattern.matcher(password).matches()
+    }
+
+    private fun isPhone(phoneNumber: String): Boolean {
+        val pattern = Pattern.compile("^010-[0-9]{4}-[0-9]{4}$")
+        return pattern.matcher(phoneNumber).matches()
     }
 }
